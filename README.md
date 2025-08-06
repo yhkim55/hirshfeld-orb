@@ -22,8 +22,10 @@ mol.basis = "cc-pVDZ"
 mol.build()
 mf = scf.RHF(mol).run()
 
-# DFT xc functional is used to calculate free-atom density
+# DFT xc functional is used to calculate free-atom density, PBE is used in this example
+
 # Hirshfeld population analysis for orbitals 0,1,and 2
-hirsh_popul = HirshfeldAnalysis(mf, "PBE").run_by_orb(orb_indics=[0,1,2])
+hirsh_popul = HirshfeldAnalysis(mf, "PBE").run_by_orb(orb_indices=[0,1,2])
+
 # Hirshfeld population analysis for all orbitals
 hirsh_popul = HirshfeldAnalysis(mf, "PBE").run_by_orb()
