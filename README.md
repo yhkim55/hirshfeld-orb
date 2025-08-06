@@ -1,51 +1,29 @@
-Hirshfeld Analysis module for PySCF
-===================================
+# Hirshfeld Analysis module for PySCF
 
-2022-12-04
+Original script from [https://github.com/frobnitzem/hirshfeld]
 
-* Version 1.0
-   - changed Hirshfeld to HirshfeldAnalysis
-     from https://github.com/ajz34/vdw.git
+## Install
 
-     - This rearranges the API from functions like charges()
-       to properties like H.result['charge_eff']
-
-   - replaced single atom calculations with nrks
-
-2022-02-17
-
-* Version 0.3
-   - fixed `make_symmetric` function to keep total spin constant
-
-   - added comparison test to original Hirshfeld paper
-
-* Version 0.2
-   - implemented `_dm_of` function to replace `make_rdm1()`,
-     but handle fractional occupancies correctly
-
-   - changed `_calc` to use UKS by default, since hydrogen had
-     a strange `mo_occ` shape with ROKS.
-
-   - fixed charge() and integrate() functions to integrate
-     charge densities, rather than electron densities
-
-Install
--------
-
-There are two different options for installation:
-
-* Install to python site-packages folder
 ```
-pip install git+https://github.com/frobnitzem/hirshfeld
-```
-
-* Install in a custom folder for development
-```
-git clone https://github.com/frobnitzem/hirshfeld.git /home/abc/local/path
+git clone https://github.com/yhkim55/hirshfeld-orb.git
 
 # Set pyscf extended module path:
 echo 'export PYSCF_EXT_PATH=/home/abc/local/path:$PYSCF_EXT_PATH' >> ~/.bashrc
 ```
+## Usage
+```
+from pyscf import gto, scf
+mol = gto.Mole()
+mol.atom = """
+O 0 0 0; H 0 0 1; H 0 1 0;
+O 0 0 2; H 0 0 3; H 0 1 2
+"""
+mol.basis = "cc-pVDZ"
+mol.build()
+mf = scf.RHF(mol).run()
 
-You can find more details of extended modules in the document
-[extension modules](http://pyscf.org/pyscf/install.html#extension-modules)
+# DFT xc functional is used to calculate free-atom density
+# Hirshfeld population analysis for orbitals 0,1,and 2
+hirsh_popul = HirshfeldAnalysis(mf, "PBE").run_by_orb(orb_indics=[0,1,2])
+# Hirshfeld population analysis for all orbitals
+hirsh_popul = HirshfeldAnalysis(mf, "PBE").run_by_orb()

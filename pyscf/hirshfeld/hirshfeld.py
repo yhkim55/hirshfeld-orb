@@ -2,7 +2,6 @@
 # https://link.springer.com/content/pdf/10.1007/BF00549096.pdf
 
 import sys
-import logging
 import numpy as np
 from pyscf import scf, dft, mcscf
 from .sph_dft_atom_ks import get_atm_nrks, free_atom_info
@@ -93,7 +92,6 @@ class HirshfeldAnalysis:
         """
         result = self.result
         ni  = dft.numint.NumInt()
-        # set logging to stdout
 
         if orb_idx is None:
             dm = self.mf.make_rdm1()
@@ -152,13 +150,11 @@ class HirshfeldAnalysis:
         return self
     
     def run_by_orb(self, fn=None, orb_indices=None):
-        logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
         self.perform_free_atom()
         result = []
         if orb_indices is None:
             orb_indices = np.arange(len(self.mol.ao_labels()))
         for orb_idx in orb_indices:
-#            logging.info(f"Running Hirshfeld for orbital {orb_idx}")
             self.perform_hirshfeld(fn, orb_idx=orb_idx)
             result.append(self.result['elec_eff'].copy())
         result = np.array(result)
